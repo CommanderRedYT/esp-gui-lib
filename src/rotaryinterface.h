@@ -12,7 +12,9 @@ enum RotaryEvent
     CounterClockwise,
     ButtonPressed,
     ButtonReleased,
-    RotaryMax = ButtonReleased
+    ShortButtonPress,
+    LongButtonPress,
+    RotaryMax = LongButtonPress
 };
 
 inline std::string toString(RotaryEvent rotaryEvent)
@@ -23,6 +25,8 @@ inline std::string toString(RotaryEvent rotaryEvent)
     case RotaryEvent::CounterClockwise: return "CounterClockwise";
     case RotaryEvent::ButtonPressed: return "ButtonPressed";
     case RotaryEvent::ButtonReleased: return "ButtonReleased";
+    case RotaryEvent::ShortButtonPress: return "ShortButtonPress";
+    case RotaryEvent::LongButtonPress: return "LongButtonPress";
     default: return "Unknown";
     }
 }

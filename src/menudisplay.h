@@ -37,6 +37,8 @@ public:
     void buttonPressed(Button button) override;
     void buttonReleased(Button button) override;
 
+    void rotaryEvent(RotaryEvent event) override {}
+
     MenuDisplay *asMenuDisplay() override { return this; }
     const MenuDisplay *asMenuDisplay() const override { return this; }
 
