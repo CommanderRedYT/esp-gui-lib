@@ -6,6 +6,7 @@
 
 // local includes
 #include "buttonsinterface.h"
+#include "rotaryinterface.h"
 
 // forward declares
 namespace espgui {
@@ -73,12 +74,12 @@ public:
     }
 };
 
-class Display : public virtual ButtonsInterface
+class Display : public virtual ButtonsInterface, public virtual RotaryInterface
 {
 public:
     virtual ~Display() = default;
 
-    //! Display comes into existance, is shown
+    //! Display comes into existence, is shown
     virtual void start() {}
 
     //! Display needs to fully initialize screen
@@ -90,7 +91,7 @@ public:
     //! Display can update screen incrementally
     virtual void redraw(TftInterface &tft) {}
 
-    //! Display goes out of existance, is not shown anymore
+    //! Display goes out of existence, is not shown anymore
     virtual void stop() {}
 
     virtual TextInterface *asTextInterface() { return nullptr; }

@@ -43,6 +43,7 @@ set(headers
     src/popupdisplay.h
     src/richtexthelper.h
     src/richtextrenderer.h
+    src/rotaryinterface.h
     src/screenmanager.h
     src/scrollinterface.h
     src/splitgraphdisplay.h
