@@ -127,17 +127,16 @@ void Keyboard<TDisplay>::drawKeyboard(TftInterface &tft, bool dont_draw_string)
     constexpr const int FONT = 4;
 
     size_t char_index{0};
-    std::string keyboard_screen{m_keyboard};
 
-    std::vector<std::string> keyboard_lines;
+    std::vector<std::string> keyboard_lines(m_keyboard.size() / 10);
 
-    for (size_t i = 0; i < keyboard_screen.size(); i += 10)
+    for (size_t i = 0; i < m_keyboard.size(); i += 10)
     {
-        std::string line = keyboard_screen.substr(i, 10);
+        std::string line = m_keyboard.substr(i, 10);
         if (line.ends_with(" "))
             line.pop_back();
 
-        keyboard_lines.push_back(line);
+        keyboard_lines.emplace_back(line);
     }
 
     for (size_t i = 0; i < keyboard_lines.size(); i++)
