@@ -108,7 +108,6 @@ set(dependencies
     espchrono
     espcpputils
     espwifistack
-    fmt
     TFT_eSPI
     esptftlib
     espfontlib
