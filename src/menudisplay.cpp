@@ -59,19 +59,24 @@ void MenuDisplay::update()
         const auto offset = m_rotateOffset;
         m_rotateOffset = 0;
 
-        const auto itemCount = menuItemCount();
-
-        if (itemCount)
+        if (const auto itemCount = menuItemCount())
         {
             if (m_selectedIndex == -1)
                 m_selectedIndex = 0;
 
-            m_selectedIndex = m_selectedIndex + offset;
+            m_selectedIndex += offset;
 
             if (m_selectedIndex < 0)
                 m_selectedIndex += itemCount;
             if (m_selectedIndex >= itemCount)
                 m_selectedIndex -= itemCount;
+
+            if (getMenuItem(m_selectedIndex).skipScroll())
+            {
+                m_selectedIndex = offset >= 0 ?
+                    getNextAccessibleMenuItemIndex(m_selectedIndex) :
+                getPreviousAccessibleMenuItemIndex(m_selectedIndex);
+            }
 
             if (m_selectedIndex < m_scrollOffset)
                 m_scrollOffset = m_selectedIndex;
@@ -87,18 +92,6 @@ void MenuDisplay::update()
         runForEveryMenuItem([&](MenuItem &item){
             item.update();
         });
-
-        if (m_selectedIndex >= 0 && m_selectedIndex < m_menuItems.size() && getMenuItem(m_selectedIndex).skipScroll())
-        {
-            if (offset > 0)
-            {
-                m_rotateOffset++;
-            }
-            else if (offset < 0)
-            {
-                m_rotateOffset--;
-            }
-        }
     }
 
     if (m_pressed)
@@ -171,7 +164,7 @@ void MenuDisplay::redraw(TftInterface &tft)
             drawItemRect(*labelsIter, TFT_BLACK);
             *iconsIter = nullptr;
             labelsIter->start(tft);
-        }                
+        }
 
         labelsIter->redraw(tft, item.text(), item.color(), selected ? TFT_GREY : TFT_BLACK, item.font());
 

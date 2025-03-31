@@ -16,10 +16,12 @@ namespace espgui {
 class ProgressBar
 {
 public:
-    ProgressBar(int x, int y, int width, int height, int min, int max, uint32_t color = TFT_YELLOW);
+    ProgressBar(int x, int y, int width, int height, int min, int max, uint32_t color = TFT_YELLOW, uint32_t backgroundColor = TFT_BLACK);
 
     void start(TftInterface &tft);
     void redraw(TftInterface &tft, int value);
+
+    void changeColor(TftInterface &tft, const uint32_t color = TFT_YELLOW, const uint32_t backgroundColor = TFT_BLACK);
 
 private:
     const int m_x;
@@ -28,7 +30,8 @@ private:
     const int m_height;
     const int m_min;
     const int m_max;
-    const uint32_t m_color;
+    uint32_t m_color;
+    uint32_t m_backgroundColor;
 
     int m_lastValue{};
 };
