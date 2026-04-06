@@ -181,7 +181,7 @@ private:
     int m_rotateOffset;
     bool m_pressed;
 
-    std::vector<std::unique_ptr<MenuItem>> m_menuItems{CONFIG_ESPGUI_MENUDISPLAY_ROWS};
+    std::vector<std::unique_ptr<MenuItem>> m_menuItems{};
 
     struct ButtonHeldInfo
     {
