@@ -15,7 +15,6 @@
 
 // local includes
 #include "displaywithtitle.h"
-#include "textinterface.h"
 #include "widgets/label.h"
 #include "menuitem.h"
 #include "backinterface.h"
@@ -40,25 +39,17 @@ public:
     void rotaryEvent(RotaryEvent event) override {}
 
     MenuDisplay *asMenuDisplay() override { return this; }
-    const MenuDisplay *asMenuDisplay() const override { return this; }
+    [[nodiscard]] const MenuDisplay *asMenuDisplay() const override { return this; }
 
-    int selectedIndex() const { return m_selectedIndex; }
+    [[nodiscard]] int selectedIndex() const { return m_selectedIndex; }
 
-    std::size_t menuItemCount() const { return m_menuItems.size(); }
+    [[nodiscard]] std::size_t menuItemCount() const { return m_menuItems.size(); }
 
-    MenuItem& getMenuItem(std::size_t index)
-    {
-        assert(index < m_menuItems.size());
-        return *m_menuItems[index].get();
-    }
+    MenuItem& getMenuItem(std::size_t index);
 
-    const MenuItem& getMenuItem(std::size_t index) const
-    {
-        assert(index < m_menuItems.size());
-        return *m_menuItems[index].get();
-    }
+    [[nodiscard]] const MenuItem& getMenuItem(std::size_t index) const;
 
-    int getNextAccessibleMenuItemIndex(int index) const
+    [[nodiscard]] size_t getNextAccessibleMenuItemIndex(const int index) const
     {
         for (std::size_t i = index + 1; i < m_menuItems.size(); ++i)
             if (!m_menuItems[i]->skipScroll())
@@ -71,7 +62,7 @@ public:
         return -1;
     }
 
-    int getPreviousAccessibleMenuItemIndex(int index) const
+    [[nodiscard]] size_t getPreviousAccessibleMenuItemIndex(const int index) const
     {
         for (std::size_t i = index - 1; i < m_menuItems.size(); --i)
             if (!m_menuItems[i]->skipScroll())
@@ -84,17 +75,9 @@ public:
         return -1;
     }
 
-    void runForEveryMenuItem(std::function<void(MenuItem&)> &&callback)
-    {
-        for (const auto &ptr : m_menuItems)
-            callback(*ptr);
-    }
+    void runForEveryMenuItem(const std::function<void(MenuItem&)>& callback);
 
-    void runForEveryMenuItem(std::function<void(const MenuItem&)> &&callback) const
-    {
-        for (const auto &ptr : m_menuItems)
-            callback(*ptr);
-    }
+    void runForEveryMenuItemConst(const std::function<void(const MenuItem&)>& callback) const;
 
     template<typename T, typename... Args>
     T &constructMenuItem(Args&&... args)
@@ -105,14 +88,12 @@ public:
         return ref;
     }
 
-    void emplaceMenuItem(std::unique_ptr<MenuItem> &&ptr)
-    {
-        m_menuItems.emplace_back(std::move(ptr));
-    }
+    void emplaceMenuItem(std::unique_ptr<MenuItem> &&ptr);
 
     void clearMenuItems()
     {
         m_menuItems.clear();
+        m_menuItems.shrink_to_fit();
     }
 
     std::unique_ptr<MenuItem> takeLastMenuItem()
@@ -123,13 +104,13 @@ public:
         return ptr;
     }
 
-    void rotate(int offset)
+    void rotate(const int offset)
     {
         m_rotateOffset += offset;
     }
 
 protected:
-    void setSelectedIndex(int selectedIndex) { m_selectedIndex = selectedIndex; }
+    void setSelectedIndex(const int selectedIndex) { m_selectedIndex = selectedIndex; }
 
 private:
     static constexpr size_t rowCount = CONFIG_ESPGUI_MENUDISPLAY_ROWS;
@@ -172,16 +153,16 @@ private:
 #endif
     }};
 
-    std::array<const Icon<24, 24> *, rowCount> m_icons;
+    std::array<const Icon<24, 24> *, rowCount> m_icons{};
 
     int m_selectedIndex{};
     int m_scrollOffset{};
-    int m_highlightedIndex;
+    int m_highlightedIndex{};
 
-    int m_rotateOffset;
-    bool m_pressed;
+    int m_rotateOffset{};
+    bool m_pressed{};
 
-    std::vector<std::unique_ptr<MenuItem>> m_menuItems{};
+    std::vector<std::unique_ptr<MenuItem>> m_menuItems;
 
     struct ButtonHeldInfo
     {

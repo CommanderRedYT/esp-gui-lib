@@ -1,10 +1,15 @@
 #include "menudisplay.h"
 
+// esp-idf includes
+#include <esp_log.h>
+
 // local includes
 #include "tftinterface.h"
 #include "tftcolors.h"
 
 using namespace std::chrono_literals;
+
+constexpr const char * const TAG = "menudisplay";
 
 namespace espgui {
 void MenuDisplay::start()
@@ -153,9 +158,9 @@ void MenuDisplay::redraw(TftInterface &tft)
                 *iconsIter = nullptr;
                 labelsIter->start(tft);
 
-                if (auto icon = item.selectedIcon())
+                if (const auto icon = item.selectedIcon())
                 {
-                    tft.pushImage(tft.width() - 6 - icon->WIDTH, labelsIter->y() + 1, *icon);
+                    tft.pushImage(tft.width() - 6 - MenuItemIcon::WIDTH, labelsIter->y() + 1, *icon);
                 }
             }
         }
@@ -248,4 +253,75 @@ void MenuDisplay::buttonReleased(Button button)
     default:;
     }
 }
+
+MenuItem &MenuDisplay::getMenuItem(const std::size_t index)
+{
+    assert(index < m_menuItems.size());
+    // Ensure the stored unique_ptr isn't null. If it is, avoid deref and return a stable empty object.
+    if (!m_menuItems[index]) {
+        static EmptyMenuItem s_empty;
+        ESP_LOGE(TAG, "menudisplay %s wanted to access menu item at index %i, but ptr == nullptr", title().c_str(), index);
+        // print all menuitems
+        ESP_LOGE(TAG, "m_menuItems.size(): %i", m_menuItems.size());
+        for (int i = 0; i < m_menuItems.size(); i++) {
+            ESP_LOGE(TAG, "[%i]: %p", i, &m_menuItems[i]);
+        }
+        assert(false && "MenuDisplay: getMenuItem() encountered null unique_ptr");
+        return s_empty;
+    }
+    return *m_menuItems[index];
+}
+
+const MenuItem &MenuDisplay::getMenuItem(const std::size_t index) const
+{
+    assert(index < m_menuItems.size());
+    // Ensure the stored unique_ptr isn't null. If it is, avoid deref and return a stable empty object.
+    if (!m_menuItems[index]) {
+        static EmptyMenuItem s_empty;
+        ESP_LOGE(TAG, "menudisplay %s wanted to access menu item at index %i, but ptr == nullptr", title().c_str(), index);
+        // print all menuitems
+        ESP_LOGE(TAG, "m_menuItems.size(): %i", m_menuItems.size());
+        for (int i = 0; i < m_menuItems.size(); i++) {
+            ESP_LOGE(TAG, "[%i]: %p", i, &m_menuItems[i]);
+        }
+        assert(false && "MenuDisplay: getMenuItem() encountered null unique_ptr");
+        return s_empty;
+    }
+    return *m_menuItems[index];
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void MenuDisplay::runForEveryMenuItem(const std::function<void(MenuItem &)>& callback)
+{
+    if (!callback) {
+        ESP_LOGE(TAG, "Invalid callback was passed!");
+        return;
+    }
+
+    for (const auto &ptr : m_menuItems)
+        if (ptr)
+            callback(*ptr);
+}
+
+void MenuDisplay::runForEveryMenuItemConst(const std::function<void(const MenuItem &)>& callback) const
+{
+    if (!callback) {
+        ESP_LOGE(TAG, "Invalid callback was passed!");
+        return;
+    }
+
+    for (const auto &ptr : m_menuItems)
+        if (ptr)
+            callback(*ptr);
+}
+
+void MenuDisplay::emplaceMenuItem(std::unique_ptr<MenuItem> &&ptr)
+{
+    // Don't allow inserting a null pointer.
+    assert(ptr && "MenuDisplay::emplaceMenuItem called with null ptr");
+    if (!ptr)
+        return;
+    m_menuItems.emplace_back(std::move(ptr));
+}
+
 } // namespace espgui
