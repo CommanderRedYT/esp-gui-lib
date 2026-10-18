@@ -5,6 +5,7 @@ namespace espgui {
 class BackInterface
 {
 public:
+    virtual ~BackInterface() = default;
     virtual void back() = 0;
 };
 

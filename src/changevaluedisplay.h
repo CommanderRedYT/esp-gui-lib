@@ -1,30 +1,27 @@
 #pragma once
 
 // system includes
-#include <type_traits>
 #include <optional>
+#include <type_traits>
 
 // 3rdparty lib includes
 #include <espchrono.h>
 
 // local includes
-#include "tftinterface.h"
-#include "tftcolors.h"
-#include "displaywithtitle.h"
-#include "textinterface.h"
-#include "confirminterface.h"
-#include "backinterface.h"
-#include "errorhandlerinterface.h"
 #include "accessorinterface.h"
+#include "backinterface.h"
+#include "confirminterface.h"
+#include "displaywithtitle.h"
+#include "errorhandlerinterface.h"
+#include "tftcolors.h"
 #include "widgets/label.h"
 
 namespace espgui {
 
-class ChangeValueDisplayInterface :
-    public DisplayWithTitle,
-    public virtual ConfirmInterface,
-    public virtual BackInterface,
-    public virtual ErrorHandlerInterface
+class ChangeValueDisplayInterface : public DisplayWithTitle,
+                                    public virtual ConfirmInterface,
+                                    public virtual BackInterface,
+                                    public virtual ErrorHandlerInterface
 {
     using Base = DisplayWithTitle;
 
@@ -32,9 +29,9 @@ public:
     void initScreen(TftInterface &tft) override;
 
     ChangeValueDisplayInterface *asChangeValueDisplayInterface() override { return this; }
-    const ChangeValueDisplayInterface *asChangeValueDisplayInterface() const override { return this; }
+    [[nodiscard]] const ChangeValueDisplayInterface *asChangeValueDisplayInterface() const override { return this; }
 
-    virtual int shownValue() const = 0;
+    [[nodiscard]] virtual int shownValue() const = 0;
     virtual void setShownValue(int value) = 0;
 
 protected:
@@ -45,7 +42,8 @@ template<typename Tvalue>
 class ChangeValueDisplaySettingsInterface
 {
 public:
-    virtual Tvalue step() const { return Tvalue{1}; }
+    virtual ~ChangeValueDisplaySettingsInterface() = default;
+    [[nodiscard]] virtual Tvalue step() const { return Tvalue{1}; }
 };
 
 template<typename Tvalue, typename Tratio>
@@ -56,10 +54,9 @@ public:
 };
 
 template<typename Tvalue>
-class ChangeValueDisplay :
-    public ChangeValueDisplayInterface,
-    public virtual AccessorInterface<Tvalue>,
-    public virtual ChangeValueDisplaySettingsInterface<Tvalue>
+class ChangeValueDisplay : public ChangeValueDisplayInterface,
+                           public virtual AccessorInterface<Tvalue>,
+                           public virtual ChangeValueDisplaySettingsInterface<Tvalue>
 {
     using Base = ChangeValueDisplayInterface;
 
@@ -73,13 +70,13 @@ public:
     void buttonPressed(Button button) override;
     void buttonReleased(Button button) override;
 
-    int shownValue() const { return m_value; }
-    void setShownValue(int value) { m_value = value; }
+    [[nodiscard]] int shownValue() const override { return m_value; }
+    void setShownValue(int value) override { m_value = value; }
 
 private:
     Tvalue m_value{};
 
-    int m_rotateOffset;
+    int m_rotateOffset{};
     bool m_pressed{};
 
     struct ButtonHeldInfo
@@ -116,14 +113,14 @@ void ChangeValueDisplay<Tvalue>::update()
     {
         using namespace std::chrono_literals;
         m_upHeld->nextTimestamp += m_upHeld->counter > 10 ? 50ms : (m_upHeld->counter > 3 ? 100ms : 200ms);
-        m_upHeld->counter++;
+        ++m_upHeld->counter;
         m_rotateOffset--;
     }
     if (m_downHeld && now >= m_downHeld->nextTimestamp)
     {
         using namespace std::chrono_literals;
         m_downHeld->nextTimestamp += m_downHeld->counter > 10 ? 50ms : (m_downHeld->counter > 3 ? 100ms : 200ms);
-        m_downHeld->counter++;
+        ++m_downHeld->counter;
         m_rotateOffset++;
     }
 
@@ -137,7 +134,7 @@ void ChangeValueDisplay<Tvalue>::update()
     if (m_pressed)
     {
         m_pressed = false;
-        if (auto result = static_cast<AccessorInterface<Tvalue>*>(this)->setValue(m_value); result)
+        if (auto result = static_cast<AccessorInterface<Tvalue> *>(this)->setValue(m_value); result)
             confirm();
         else
             errorOccurred(std::move(result).error());
@@ -156,40 +153,44 @@ template<>
 void ChangeValueDisplay<float>::redraw(TftInterface &tft);
 
 template<typename Tvalue>
-void ChangeValueDisplay<Tvalue>::buttonPressed(Button button)
+void ChangeValueDisplay<Tvalue>::buttonPressed(const Button button)
 {
-    //Base::buttonPressed(button);
+    // Base::buttonPressed(button);
 
     switch (button)
     {
-    case Button::Left: this->back(); break;
-    case Button::Right: m_pressed = true; break;
-    using namespace std::chrono_literals;
-    case Button::Up:
-        m_rotateOffset--;
-        m_upHeld = ButtonHeldInfo { .nextTimestamp = espchrono::millis_clock::now() + 300ms };
-        break;
-    case Button::Down:
-        m_rotateOffset++;
-        m_downHeld = ButtonHeldInfo { .nextTimestamp = espchrono::millis_clock::now() + 300ms };
-        break;
+        case Button::Left:
+            this->back();
+            break;
+        case Button::Right:
+            m_pressed = true;
+            break;
+            using namespace std::chrono_literals;
+        case Button::Up:
+            m_rotateOffset--;
+            m_upHeld = ButtonHeldInfo{.nextTimestamp = espchrono::millis_clock::now() + 300ms};
+            break;
+        case Button::Down:
+            m_rotateOffset++;
+            m_downHeld = ButtonHeldInfo{.nextTimestamp = espchrono::millis_clock::now() + 300ms};
+            break;
     }
 }
 
 template<typename Tvalue>
-void ChangeValueDisplay<Tvalue>::buttonReleased(Button button)
+void ChangeValueDisplay<Tvalue>::buttonReleased(const Button button)
 {
-    //Base::buttonPressed(button);
+    // Base::buttonPressed(button);
 
     switch (button)
     {
-    case Button::Up:
-        m_upHeld = std::nullopt;
-        break;
-    case Button::Down:
-        m_downHeld = std::nullopt;
-        break;
-    default:;
+        case Button::Up:
+            m_upHeld = std::nullopt;
+            break;
+        case Button::Down:
+            m_downHeld = std::nullopt;
+            break;
+        default:;
     }
 }
 

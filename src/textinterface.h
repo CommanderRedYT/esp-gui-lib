@@ -6,15 +6,17 @@
 
 namespace espgui {
 
-class TextInterface {
+class TextInterface
+{
 public:
-    virtual std::string text() const = 0;
+    virtual ~TextInterface() = default;
+    [[nodiscard]] virtual std::string text() const = 0;
 };
 
 class EmptyText : public virtual TextInterface
 {
 public:
-    std::string text() const override { return {}; }
+    [[nodiscard]] std::string text() const override { return {}; }
 };
 
 template<const char *Ttext>
@@ -23,17 +25,17 @@ class StaticText : public virtual TextInterface
 public:
     static constexpr const char *STATIC_TEXT = Ttext;
 
-    std::string text() const override { return Ttext; }
+    [[nodiscard]] std::string text() const override { return Ttext; }
 };
 
 class ChangeableText : public virtual TextInterface
 {
 public:
     ChangeableText() = default;
-    ChangeableText(std::string &&title) : m_title{std::move(title)} {}
-    ChangeableText(std::string_view title) : m_title{title} {}
+    explicit ChangeableText(std::string &&title) : m_title{std::move(title)} {}
+    explicit ChangeableText(const std::string_view title) : m_title{title} {}
 
-    std::string text() const override { return m_title; }
+    [[nodiscard]] std::string text() const override { return m_title; }
     void setTitle(std::string &&title) { m_title = std::move(title); }
     void setTitle(const std::string &title) { m_title = title; }
 
@@ -65,7 +67,7 @@ template<typename T>
 class StaticallyCachedText : public virtual T
 {
 public:
-    std::string text() const override
+    [[nodiscard]] std::string text() const override
     {
         static const auto text = T::text();
         return text;

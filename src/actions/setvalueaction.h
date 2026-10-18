@@ -1,8 +1,8 @@
 #pragma once
 
 // local includes
-#include "actioninterface.h"
 #include "accessorinterface.h"
+#include "actioninterface.h"
 #include "confirminterface.h"
 #include "errorhandlerinterface.h"
 
@@ -11,12 +11,14 @@ template<typename T>
 class SetValueAction : public virtual ActionInterface
 {
 public:
-    SetValueAction(T value, AccessorInterface<T> &accessorInterface,
-                   ConfirmInterface &confirmInterface, ErrorHandlerInterface &errorHandlerInterface) :
-        m_value{value},
-        m_accessorInterface{accessorInterface},
-        m_confirmInterface{confirmInterface},
-        m_errorHandlerInterface{errorHandlerInterface}
+    SetValueAction(T value,
+                   AccessorInterface<T> &accessorInterface,
+                   ConfirmInterface &confirmInterface,
+                   ErrorHandlerInterface &errorHandlerInterface) :
+          m_value{value},
+          m_accessorInterface{accessorInterface},
+          m_confirmInterface{confirmInterface},
+          m_errorHandlerInterface{errorHandlerInterface}
     {
     }
 

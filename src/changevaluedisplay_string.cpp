@@ -5,8 +5,8 @@
 #include <fontrenderer.h>
 
 // local includes
-#include "tftinterface.h"
 #include "tftcolors.h"
+#include "tftinterface.h"
 
 using namespace std::chrono_literals;
 
@@ -52,13 +52,15 @@ void espgui::ChangeValueDisplay<std::string>::redraw(TftInterface &tft)
 
     if (m_needsClear)
     {
-        tft.drawRect(m_valueLabel.x() + fontRenderer.textWidth(*m_needsClear, 4) + 3, m_valueLabel.y(), 2, fontRenderer.fontHeight(4), TFT_BLACK);
+        tft.drawRect(m_valueLabel.x() + fontRenderer.textWidth(*m_needsClear, 4) + 3, m_valueLabel.y(), 2,
+                     fontRenderer.fontHeight(4), TFT_BLACK);
         m_needsClear = std::nullopt;
     }
 
     m_valueLabel.redraw(tft, string, TFT_WHITE, TFT_BLACK, 4);
 
-    tft.drawRect(m_valueLabel.x() + fontRenderer.textWidth(string, 4) + 3, m_valueLabel.y(), 2, fontRenderer.fontHeight(4), (now_ts % 1000ms < 500ms) ? TFT_WHITE : TFT_BLACK);
+    tft.drawRect(m_valueLabel.x() + fontRenderer.textWidth(string, 4) + 3, m_valueLabel.y(), 2,
+                 fontRenderer.fontHeight(4), (now_ts % 1000ms < 500ms) ? TFT_WHITE : TFT_BLACK);
 
     m_keyboard.redraw(tft);
 
@@ -78,15 +80,15 @@ void espgui::ChangeValueDisplay<std::string>::setShownValue(std::string &&value)
     m_value = std::move(value);
 }
 
-void espgui::ChangeValueDisplay<std::string>::buttonPressed(Button button)
+void espgui::ChangeValueDisplay<std::string>::buttonPressed(const Button button)
 {
-    //Base::buttonPressed(button);
+    // Base::buttonPressed(button);
     m_keyboard.buttonPressed(button);
 }
 
-void espgui::ChangeValueDisplay<std::string>::buttonReleased(Button button)
+void espgui::ChangeValueDisplay<std::string>::buttonReleased(const Button button)
 {
-    //Base::buttonReleased(button);
+    // Base::buttonReleased(button);
     m_keyboard.buttonReleased(button);
 }
 

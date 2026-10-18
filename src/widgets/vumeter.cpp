@@ -9,8 +9,8 @@
 #include <fontrenderer.h>
 
 // local includes
-#include "tftinterface.h"
 #include "tftcolors.h"
+#include "tftinterface.h"
 
 namespace espgui {
 void VuMeter::start(TftInterface &tft)
@@ -26,7 +26,8 @@ void VuMeter::start(TftInterface &tft)
     tft.fillRect(5, 3, 230, 119, TFT_WHITE);
 
     // Draw ticks every 5 degrees from -50 to +50 degrees (100 deg. FSD swing)
-    for (int i = -50; i < 51; i += 5) {
+    for (int i = -50; i < 51; i += 5)
+    {
         // Long scale tick length
         int tl = 15;
 
@@ -47,19 +48,21 @@ void VuMeter::start(TftInterface &tft)
         int y3 = sy2 * 100 + 140;
 
         // Yellow zone limits
-        //if (i >= -50 && i < 0) {
+        // if (i >= -50 && i < 0) {
         //    tft.fillTriangle(x0, y0, x1, y1, x2, y2, TFT_YELLOW);
         //    tft.fillTriangle(x1, y1, x2, y2, x3, y3, TFT_YELLOW);
         //}
 
         // Green zone limits
-        if (i >= 0 && i < 25) {
+        if (i >= 0 && i < 25)
+        {
             tft.fillTriangle(x0, y0, x1, y1, x2, y2, TFT_GREEN);
             tft.fillTriangle(x1, y1, x2, y2, x3, y3, TFT_GREEN);
         }
 
         // Orange zone limits
-        if (i >= 25 && i < 50) {
+        if (i >= 25 && i < 50)
+        {
             tft.fillTriangle(x0, y0, x1, y1, x2, y2, TFT_ORANGE);
             tft.fillTriangle(x1, y1, x2, y2, x3, y3, TFT_ORANGE);
         }
@@ -77,16 +80,28 @@ void VuMeter::start(TftInterface &tft)
         tft.drawLine(x0, y0, x1, y1, TFT_BLACK);
 
         // Check if labels should be drawn, with position tweaks
-        if (i % 25 == 0) {
+        if (i % 25 == 0)
+        {
             // Calculate label positions
             x0 = sx * (100 + tl + 10) + 120;
             y0 = sy * (100 + tl + 10) + 140;
-            switch (i / 25) {
-                case -2: fontRenderer.drawCentreString("0", x0, y0 - 12, TFT_BLACK, TFT_BLACK, 2); break;
-                case -1: fontRenderer.drawCentreString("7.5", x0, y0 - 9, TFT_BLACK, TFT_BLACK, 2); break;
-                case 0: fontRenderer.drawCentreString("15", x0, y0 - 6, TFT_BLACK, TFT_BLACK, 2); break;
-                case 1: fontRenderer.drawCentreString("22.5", x0, y0 - 9, TFT_BLACK, TFT_BLACK, 2); break;
-                case 2: fontRenderer.drawCentreString("30", x0, y0 - 12, TFT_BLACK, TFT_BLACK, 2); break;
+            switch (i / 25)
+            {
+                case -2:
+                    fontRenderer.drawCentreString("0", x0, y0 - 12, TFT_BLACK, TFT_BLACK, 2);
+                    break;
+                case -1:
+                    fontRenderer.drawCentreString("7.5", x0, y0 - 9, TFT_BLACK, TFT_BLACK, 2);
+                    break;
+                case 0:
+                    fontRenderer.drawCentreString("15", x0, y0 - 6, TFT_BLACK, TFT_BLACK, 2);
+                    break;
+                case 1:
+                    fontRenderer.drawCentreString("22.5", x0, y0 - 9, TFT_BLACK, TFT_BLACK, 2);
+                    break;
+                case 2:
+                    fontRenderer.drawCentreString("30", x0, y0 - 12, TFT_BLACK, TFT_BLACK, 2);
+                    break;
             }
         }
 
@@ -105,27 +120,32 @@ void VuMeter::start(TftInterface &tft)
 }
 
 namespace {
-char * dtostrf(double number, signed char width, unsigned char prec, char *s) {
+char *dtostrf(double number, signed char width, unsigned char prec, char *s)
+{
     bool negative = false;
 
-    if (std::isnan(number)) {
+    if (std::isnan(number))
+    {
         std::strcpy(s, "nan");
         return s;
     }
-    if (std::isinf(number)) {
+    if (std::isinf(number))
+    {
         std::strcpy(s, "inf");
         return s;
     }
 
-    char* out = s;
+    char *out = s;
 
     int fillme = width; // how many cells to fill for the integer part
-    if (prec > 0) {
-        fillme -= (prec+1);
+    if (prec > 0)
+    {
+        fillme -= (prec + 1);
     }
 
     // Handle negative numbers
-    if (number < 0.0) {
+    if (number < 0.0)
+    {
         negative = true;
         fillme--;
         number = -number;
@@ -134,8 +154,7 @@ char * dtostrf(double number, signed char width, unsigned char prec, char *s) {
     // Round correctly so that print(1.999, 2) prints as "2.00"
     // I optimized out most of the divisions
     double rounding = 2.0;
-    for (uint8_t i = 0; i < prec; ++i)
-        rounding *= 10.0;
+    for (uint8_t i = 0; i < prec; ++i) rounding *= 10.0;
     rounding = 1.0 / rounding;
 
     number += rounding;
@@ -143,7 +162,8 @@ char * dtostrf(double number, signed char width, unsigned char prec, char *s) {
     // Figure out how big our number really is
     double tenpow = 1.0;
     int digitcount = 1;
-    while (number >= 10.0 * tenpow) {
+    while (number >= 10.0 * tenpow)
+    {
         tenpow *= 10.0;
         digitcount++;
     }
@@ -152,7 +172,8 @@ char * dtostrf(double number, signed char width, unsigned char prec, char *s) {
     fillme -= digitcount;
 
     // Pad unused cells with spaces
-    while (fillme-- > 0) {
+    while (fillme-- > 0)
+    {
         *out++ = ' ';
     }
 
@@ -162,11 +183,13 @@ char * dtostrf(double number, signed char width, unsigned char prec, char *s) {
     // Print the digits, and if necessary, the decimal point
     digitcount += prec;
     int8_t digit = 0;
-    while (digitcount-- > 0) {
-        digit = (int8_t)number;
+    while (digitcount-- > 0)
+    {
+        digit = (int8_t) number;
         if (digit > 9) digit = 9; // insurance
-        *out++ = (char)('0' | digit);
-        if ((digitcount == prec) && (prec > 0)) {
+        *out++ = (char) ('0' | digit);
+        if ((digitcount == prec) && (prec > 0))
+        {
             *out++ = '.';
         }
         number -= digit;
@@ -177,13 +200,14 @@ char * dtostrf(double number, signed char width, unsigned char prec, char *s) {
     *out = 0;
     return s;
 }
-}
+} // namespace
 
 void VuMeter::redraw(TftInterface &tft, float value)
 {
     FontRenderer fontRenderer{tft};
 
-    char buf[8]; dtostrf(value, 4, 0, buf);
+    char buf[8];
+    dtostrf(value, 4, 0, buf);
     fontRenderer.drawRightString(buf, 50, 119 - 25, TFT_BLACK, TFT_WHITE, 4);
 
     if (value < -3) value = -3; // Limit value to emulate needle end stops

@@ -10,13 +10,15 @@
 #include "tftcolors.h"
 
 // forward declares
-namespace espgui { class TftInterface; }
+namespace espgui {
+class TftInterface;
+}
 
 namespace espgui {
 class ReverseProgressBar
 {
 public:
-    ReverseProgressBar(int x, int y, int width, int height, int min, int max, uint32_t color=TFT_YELLOW);
+    ReverseProgressBar(int x, int y, int width, int height, int min, int max, uint32_t color = TFT_YELLOW);
 
     void start(TftInterface &tft);
     void redraw(TftInterface &tft, int value);

@@ -7,8 +7,8 @@
 #include <fontrenderer.h>
 
 // local includes
-#include "tftinterface.h"
 #include "tftcolors.h"
+#include "tftinterface.h"
 
 namespace espgui {
 void ChangeValueDisplayInterface::initScreen(TftInterface &tft)

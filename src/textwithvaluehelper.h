@@ -4,28 +4,28 @@
 #include <format>
 
 // 3rdparty lib includes
-#include <strutils.h>
+#include <espchrono.h>
 #include <espstrutils.h>
 #include <espwifiutils.h>
-#include <espchrono.h>
+#include <strutils.h>
 
 // local includes
-#include "textinterface.h"
 #include "richtexthelper.h"
-#include "richtextrenderer.h"
+#include "textinterface.h"
 
 namespace espgui {
 
 template<const char *Tprefix, typename Taccessor>
-struct TextWithValueHelper : public Taccessor, public virtual TextInterface
+class TextWithValueHelper : public Taccessor, public virtual TextInterface
 {
     using Taccessor::Taccessor;
 
-    std::string text() const override
+public:
+    [[nodiscard]] std::string text() const override
     {
         using cpputils::toString;
-        using espcpputils::toString;
         using espchrono::toString;
+        using espcpputils::toString;
         using wifi_stack::toString;
 
         return std::format("{} {}", Tprefix, richTextEscape(toString(Taccessor::getValue())));
@@ -33,22 +33,23 @@ struct TextWithValueHelper : public Taccessor, public virtual TextInterface
 };
 
 template<typename Taccessor>
-struct ChangeableTextWithValueHelper : public Taccessor, public virtual TextInterface
+class ChangeableTextWithValueHelper : public Taccessor, public virtual TextInterface
 {
     using Taccessor::Taccessor;
 
-    std::string text() const override
+public:
+    [[nodiscard]] std::string text() const override
     {
         using cpputils::toString;
-        using espcpputils::toString;
         using espchrono::toString;
+        using espcpputils::toString;
         using wifi_stack::toString;
 
         return std::format("{} {}", m_prefix, richTextEscape(toString(Taccessor::getValue())));
     }
 
-    const std::string &prefix() const { return m_prefix; }
-    void setPrefix(std::string_view prefix) { m_prefix = std::string{prefix}; }
+    [[nodiscard]] const std::string &prefix() const { return m_prefix; }
+    void setPrefix(const std::string_view prefix) { m_prefix = std::string{prefix}; }
     void setPrefix(std::string &&prefix) { m_prefix = std::move(prefix); }
 
 private:
@@ -56,15 +57,16 @@ private:
 };
 
 template<const char *Tprefix, typename Taccessor, const char *Tguilib_color = espgui::colors::GREY>
-struct TextWithHighlightedValueHelper : public Taccessor, public virtual TextInterface
+class TextWithHighlightedValueHelper : public Taccessor, public virtual TextInterface
 {
     using Taccessor::Taccessor;
 
-    std::string text() const override
+public:
+    [[nodiscard]] std::string text() const override
     {
         using cpputils::toString;
-        using espcpputils::toString;
         using espchrono::toString;
+        using espcpputils::toString;
         using wifi_stack::toString;
 
         return std::format("{} {}{}", Tprefix, Tguilib_color, richTextEscape(toString(Taccessor::getValue())));
@@ -72,22 +74,23 @@ struct TextWithHighlightedValueHelper : public Taccessor, public virtual TextInt
 };
 
 template<typename Taccessor, const char *Tguilib_color = espgui::colors::GREY>
-struct ChangeableTextWithHighlightedValueHelper : public Taccessor, public virtual TextInterface
+class ChangeableTextWithHighlightedValueHelper : public Taccessor, public virtual TextInterface
 {
     using Taccessor::Taccessor;
 
-    std::string text() const override
+public:
+    [[nodiscard]] std::string text() const override
     {
         using cpputils::toString;
-        using espcpputils::toString;
         using espchrono::toString;
+        using espcpputils::toString;
         using wifi_stack::toString;
 
         return std::format("{} {}{}", m_prefix, Tguilib_color, richTextEscape(toString(Taccessor::getValue())));
     }
 
-    const std::string &prefix() const { return m_prefix; }
-    void setPrefix(std::string_view prefix) { m_prefix = std::string{prefix}; }
+    [[nodiscard]] const std::string &prefix() const { return m_prefix; }
+    void setPrefix(const std::string_view prefix) { m_prefix = std::string{prefix}; }
     void setPrefix(std::string &&prefix) { m_prefix = std::move(prefix); }
 
 private:

@@ -3,14 +3,11 @@
 // local includes
 #include "actioninterface.h"
 #include "menuitem.h"
-#include "textinterface.h"
 #include "scrollinterface.h"
+#include "textinterface.h"
 
 namespace espgui {
-class MarginMenuItem :
-        public virtual MenuItem,
-        public EmptyText,
-        public virtual ScrollInterface
+class MarginMenuItem : public virtual MenuItem, public EmptyText, public virtual ScrollInterface
 {
 public:
     void triggered() override {}

@@ -8,6 +8,7 @@ namespace espgui {
 class ErrorHandlerInterface
 {
 public:
+    virtual ~ErrorHandlerInterface() = default;
     virtual void errorOccurred(std::string &&error) = 0;
 };
 

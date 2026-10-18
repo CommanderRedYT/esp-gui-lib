@@ -7,9 +7,7 @@
 
 namespace espgui {
 
-class DisplayWithTitle :
-    public Display,
-    public virtual TitleInterface
+class DisplayWithTitle : public Display, public virtual TitleInterface
 {
     using Base = Display;
 
@@ -18,7 +16,7 @@ public:
     constexpr static int TITLE_BORDER = 2;
 
     TitleInterface *asTitleInterface() override { return this; }
-    const TitleInterface *asTitleInterface() const override { return this; }
+    [[nodiscard]] const TitleInterface *asTitleInterface() const override { return this; }
 
     void initScreen(TftInterface &tft) override;
     void redraw(TftInterface &tft) override;

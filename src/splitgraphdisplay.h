@@ -1,14 +1,14 @@
 #pragma once
 
 // local includes
-#include "display.h"
-#include "tftinterface.h"
-#include "tftcolors.h"
-#include "titleinterface.h"
-#include "widgets/label.h"
-#include "widgets/graph.h"
-#include "confirminterface.h"
 #include "backinterface.h"
+#include "confirminterface.h"
+#include "display.h"
+#include "tftcolors.h"
+#include "tftinterface.h"
+#include "titleinterface.h"
+#include "widgets/graph.h"
+#include "widgets/label.h"
 
 namespace espgui {
 
@@ -16,44 +16,39 @@ template<std::size_t COUNT>
 class TopGraphAccessorInterface
 {
 public:
-    virtual typename Graph<200, COUNT>::Container getTopBuffers() const = 0;
+    virtual ~TopGraphAccessorInterface() = default;
+    [[nodiscard]] virtual Graph<200, COUNT>::Container getTopBuffers() const = 0;
 };
 
 template<typename T>
 class SingleTopGraphAccessor : public virtual TopGraphAccessorInterface<1>
 {
 public:
-    typename Graph<200, 1>::Container getTopBuffers() const override
-    {
-        return {T{}.getBuffer()};
-    }
+    [[nodiscard]] Graph<200, 1>::Container getTopBuffers() const override { return {T{}.getBuffer()}; }
 };
 
 template<std::size_t COUNT>
 class BottomGraphAccessorInterface
 {
 public:
-    virtual typename Graph<200, COUNT>::Container getBottomBuffers() const = 0;
+    virtual ~BottomGraphAccessorInterface() = default;
+    [[nodiscard]] virtual Graph<200, COUNT>::Container getBottomBuffers() const = 0;
 };
 
 template<typename T>
 class SingleBottomGraphAccessor : public virtual BottomGraphAccessorInterface<1>
 {
 public:
-    typename Graph<200, 1>::Container getBottomBuffers() const override
-    {
-        return {T{}.getBuffer()};
-    }
+    [[nodiscard]] Graph<200, 1>::Container getBottomBuffers() const override { return {T{}.getBuffer()}; }
 };
 
 template<std::size_t COUNT0, std::size_t COUNT1>
-class SplitGraphDisplay :
-    public Display,
-    public virtual TitleInterface,
-    public virtual TopGraphAccessorInterface<COUNT0>,
-    public virtual BottomGraphAccessorInterface<COUNT1>,
-    public virtual ConfirmInterface,
-    public virtual BackInterface
+class SplitGraphDisplay : public Display,
+                          public virtual TitleInterface,
+                          public virtual TopGraphAccessorInterface<COUNT0>,
+                          public virtual BottomGraphAccessorInterface<COUNT1>,
+                          public virtual ConfirmInterface,
+                          public virtual BackInterface
 {
     using Base = Display;
 
@@ -78,8 +73,8 @@ void SplitGraphDisplay<COUNT0, COUNT1>::initScreen(TftInterface &tft)
     m_titleLabel.start(tft);
     tft.fillRect(0, 34, tft.width(), 3, TFT_WHITE);
 
-    m_graph0.start(tft, static_cast<const TopGraphAccessorInterface<COUNT0>&>(*this).getTopBuffers());
-    m_graph1.start(tft, static_cast<const BottomGraphAccessorInterface<COUNT1>&>(*this).getBottomBuffers());
+    m_graph0.start(tft, static_cast<const TopGraphAccessorInterface<COUNT0> &>(*this).getTopBuffers());
+    m_graph1.start(tft, static_cast<const BottomGraphAccessorInterface<COUNT1> &>(*this).getBottomBuffers());
 }
 
 template<std::size_t COUNT0, std::size_t COUNT1>
@@ -87,20 +82,24 @@ void SplitGraphDisplay<COUNT0, COUNT1>::redraw(TftInterface &tft)
 {
     m_titleLabel.redraw(tft, title(), TFT_YELLOW, TFT_BLACK, 4);
 
-    m_graph0.redraw(tft, static_cast<const TopGraphAccessorInterface<COUNT0>&>(*this).getTopBuffers());
-    m_graph1.redraw(tft, static_cast<const BottomGraphAccessorInterface<COUNT1>&>(*this).getBottomBuffers());
+    m_graph0.redraw(tft, static_cast<const TopGraphAccessorInterface<COUNT0> &>(*this).getTopBuffers());
+    m_graph1.redraw(tft, static_cast<const BottomGraphAccessorInterface<COUNT1> &>(*this).getBottomBuffers());
 }
 
 template<std::size_t COUNT0, std::size_t COUNT1>
-void SplitGraphDisplay<COUNT0, COUNT1>::buttonPressed(Button button)
+void SplitGraphDisplay<COUNT0, COUNT1>::buttonPressed(const Button button)
 {
-    //Base::buttonPressed(button);
+    // Base::buttonPressed(button);
 
     switch (button)
     {
-    case Button::Left: back(); break;
-    case Button::Right: confirm(); break;
-    default:;
+        case Button::Left:
+            back();
+            break;
+        case Button::Right:
+            confirm();
+            break;
+        default:;
     }
 }
 

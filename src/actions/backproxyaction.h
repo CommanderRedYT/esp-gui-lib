@@ -2,21 +2,14 @@
 
 // local includes
 #include "actioninterface.h"
-#include "display.h"
 
 namespace espgui {
 class BackProxyAction : public virtual ActionInterface
 {
 public:
-    BackProxyAction(BackInterface &backInterface) :
-        m_backInterface{backInterface}
-    {
-    }
+    explicit BackProxyAction(BackInterface &backInterface) : m_backInterface{backInterface} {}
 
-    void triggered() override
-    {
-        m_backInterface.back();
-    }
+    void triggered() override { m_backInterface.back(); }
 
 private:
     BackInterface &m_backInterface;

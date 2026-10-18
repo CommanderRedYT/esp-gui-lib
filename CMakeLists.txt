@@ -29,13 +29,13 @@ set(headers
     src/fontinterface.h
     src/graphdisplay.h
     src/iconinterface.h
-    src/keyboardhelper.h
     src/icons/back.h
-    src/icons/checked.h
-    src/icons/unchecked.h
     src/icons/back_grey.h
+    src/icons/checked.h
     src/icons/checked_grey.h
+    src/icons/unchecked.h
     src/icons/unchecked_grey.h
+    src/keyboardhelper.h
     src/marginmenuitem.h
     src/menudisplay.h
     src/menuitem.h
@@ -68,6 +68,7 @@ set(headers
 set(sources
     src/changevaluedisplay.cpp
     src/changevaluedisplay_bool.cpp
+    src/changevaluedisplay_chrono.cpp
     src/changevaluedisplay_daylightsavingmode.cpp
     src/changevaluedisplay_ip_address_t.cpp
     src/changevaluedisplay_sntp_sync_mode_t.cpp
@@ -77,19 +78,19 @@ set(sources
     src/display.cpp
     src/displaywithtitle.cpp
     src/graphdisplay.cpp
+    src/icons/back.cpp
+    src/icons/back_grey.cpp
+    src/icons/checked.cpp
+    src/icons/checked_grey.cpp
+    src/icons/unchecked.cpp
+    src/icons/unchecked_grey.cpp
     src/menudisplay.cpp
     src/messagepopupdisplay.cpp
-    src/screenmanager.cpp
-    src/splitgraphdisplay.cpp
     src/popupdisplay.cpp
     src/richtexthelper.cpp
     src/richtextrenderer.cpp
-    src/icons/back.cpp
-    src/icons/checked.cpp
-    src/icons/unchecked.cpp
-    src/icons/back_grey.cpp
-    src/icons/checked_grey.cpp
-    src/icons/unchecked_grey.cpp
+    src/screenmanager.cpp
+    src/splitgraphdisplay.cpp
     src/widgets/centeredlabel.cpp
     src/widgets/iconwidget.cpp
     src/widgets/label.cpp

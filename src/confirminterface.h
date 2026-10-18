@@ -5,6 +5,7 @@ namespace espgui {
 class ConfirmInterface
 {
 public:
+    virtual ~ConfirmInterface() = default;
     virtual void confirm() = 0;
 };
 

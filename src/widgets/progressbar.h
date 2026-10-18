@@ -1,8 +1,5 @@
 #pragma once
 
-// system includes
-#include <cstdint>
-
 // 3rdparty lib includes
 #include <TFT_eSPI.h>
 
@@ -10,18 +7,27 @@
 #include "tftcolors.h"
 
 // forward declares
-namespace espgui { class TftInterface; }
+namespace espgui {
+class TftInterface;
+}
 
 namespace espgui {
 class ProgressBar
 {
 public:
-    ProgressBar(int x, int y, int width, int height, int min, int max, uint32_t color = TFT_YELLOW, uint32_t backgroundColor = TFT_BLACK);
+    ProgressBar(int x,
+                int y,
+                int width,
+                int height,
+                int min,
+                int max,
+                uint32_t color = TFT_YELLOW,
+                uint32_t backgroundColor = TFT_BLACK);
 
     void start(TftInterface &tft);
     void redraw(TftInterface &tft, int value);
 
-    void changeColor(TftInterface &tft, const uint32_t color = TFT_YELLOW, const uint32_t backgroundColor = TFT_BLACK);
+    void changeColor(TftInterface &tft, uint32_t color = TFT_YELLOW, uint32_t backgroundColor = TFT_BLACK);
 
 private:
     const int m_x;

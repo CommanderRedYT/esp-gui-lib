@@ -3,10 +3,10 @@
 #include "sdkconfig.h"
 
 // system includes
-#include <array>
 #include <algorithm>
-#include <functional>
+#include <array>
 #include <cassert>
+#include <functional>
 #include <memory>
 #include <optional>
 
@@ -14,15 +14,13 @@
 #include <espchrono.h>
 
 // local includes
-#include "displaywithtitle.h"
-#include "widgets/label.h"
-#include "menuitem.h"
 #include "backinterface.h"
+#include "displaywithtitle.h"
+#include "menuitem.h"
+#include "widgets/label.h"
 
 namespace espgui {
-class MenuDisplay :
-    public DisplayWithTitle,
-    public virtual BackInterface
+class MenuDisplay : public DisplayWithTitle, public virtual BackInterface
 {
     using Base = DisplayWithTitle;
 
@@ -41,23 +39,21 @@ public:
     MenuDisplay *asMenuDisplay() override { return this; }
     [[nodiscard]] const MenuDisplay *asMenuDisplay() const override { return this; }
 
-    [[nodiscard]] int selectedIndex() const { return m_selectedIndex; }
+    [[nodiscard]] size_t selectedIndex() const { return m_selectedIndex; }
 
     [[nodiscard]] std::size_t menuItemCount() const { return m_menuItems.size(); }
 
-    MenuItem& getMenuItem(std::size_t index);
+    MenuItem &getMenuItem(std::size_t index);
 
-    [[nodiscard]] const MenuItem& getMenuItem(std::size_t index) const;
+    [[nodiscard]] const MenuItem &getMenuItem(std::size_t index) const;
 
     [[nodiscard]] size_t getNextAccessibleMenuItemIndex(const int index) const
     {
         for (std::size_t i = index + 1; i < m_menuItems.size(); ++i)
-            if (!m_menuItems[i]->skipScroll())
-                return i;
+            if (!m_menuItems[i]->skipScroll()) return i;
 
         for (std::size_t i = 0; i < index; ++i)
-            if (!m_menuItems[i]->skipScroll())
-                return i;
+            if (!m_menuItems[i]->skipScroll()) return i;
 
         return -1;
     }
@@ -65,22 +61,20 @@ public:
     [[nodiscard]] size_t getPreviousAccessibleMenuItemIndex(const int index) const
     {
         for (std::size_t i = index - 1; i < m_menuItems.size(); --i)
-            if (!m_menuItems[i]->skipScroll())
-                return i;
+            if (!m_menuItems[i]->skipScroll()) return i;
 
         for (std::size_t i = m_menuItems.size() - 1; i > index; --i)
-            if (!m_menuItems[i]->skipScroll())
-                return i;
+            if (!m_menuItems[i]->skipScroll()) return i;
 
         return -1;
     }
 
-    void runForEveryMenuItem(const std::function<void(MenuItem&)>& callback);
+    void runForEveryMenuItem(const std::function<void(MenuItem &)> &callback);
 
-    void runForEveryMenuItemConst(const std::function<void(const MenuItem&)>& callback) const;
+    void runForEveryMenuItemConst(const std::function<void(const MenuItem &)> &callback) const;
 
     template<typename T, typename... Args>
-    T &constructMenuItem(Args&&... args)
+    T &constructMenuItem(Args &&...args)
     {
         auto ptr = std::make_unique<T>(std::forward<Args>(args)...);
         T &ref = *ptr;
@@ -104,10 +98,7 @@ public:
         return ptr;
     }
 
-    void rotate(const int offset)
-    {
-        m_rotateOffset += offset;
-    }
+    void rotate(const int offset) { m_rotateOffset += offset; }
 
 protected:
     void setSelectedIndex(const int selectedIndex) { m_selectedIndex = selectedIndex; }
@@ -120,44 +111,54 @@ private:
     static constexpr auto lineHeight = 27;
     static constexpr auto verticalSpacing = 2;
 
-    std::array<Label, rowCount> m_labels {{
+    std::array<Label, rowCount> m_labels{{
 #if CONFIG_ESPGUI_MENUDISPLAY_ROWS >= 1
-        Label{horizontalSpacing + iconWidth, topMargin+(0*(lineHeight+verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
+        Label{horizontalSpacing + iconWidth,
+              topMargin + (0 * (lineHeight + verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
 #endif
 #if CONFIG_ESPGUI_MENUDISPLAY_ROWS >= 2
-        Label{horizontalSpacing + iconWidth, topMargin+(1*(lineHeight+verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
+        Label{horizontalSpacing + iconWidth,
+              topMargin + (1 * (lineHeight + verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
 #endif
 #if CONFIG_ESPGUI_MENUDISPLAY_ROWS >= 3
-        Label{horizontalSpacing + iconWidth, topMargin+(2*(lineHeight+verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
+        Label{horizontalSpacing + iconWidth,
+              topMargin + (2 * (lineHeight + verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
 #endif
 #if CONFIG_ESPGUI_MENUDISPLAY_ROWS >= 4
-        Label{horizontalSpacing + iconWidth, topMargin+(3*(lineHeight+verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
+        Label{horizontalSpacing + iconWidth,
+              topMargin + (3 * (lineHeight + verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
 #endif
 #if CONFIG_ESPGUI_MENUDISPLAY_ROWS >= 5
-        Label{horizontalSpacing + iconWidth, topMargin+(4*(lineHeight+verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
+        Label{horizontalSpacing + iconWidth,
+              topMargin + (4 * (lineHeight + verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
 #endif
 #if CONFIG_ESPGUI_MENUDISPLAY_ROWS >= 6
-        Label{horizontalSpacing + iconWidth, topMargin+(5*(lineHeight+verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
+        Label{horizontalSpacing + iconWidth,
+              topMargin + (5 * (lineHeight + verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
 #endif
 #if CONFIG_ESPGUI_MENUDISPLAY_ROWS >= 7
-        Label{horizontalSpacing + iconWidth, topMargin+(6*(lineHeight+verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
+        Label{horizontalSpacing + iconWidth,
+              topMargin + (6 * (lineHeight + verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
 #endif
 #if CONFIG_ESPGUI_MENUDISPLAY_ROWS >= 8
-        Label{horizontalSpacing + iconWidth, topMargin+(7*(lineHeight+verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
+        Label{horizontalSpacing + iconWidth,
+              topMargin + (7 * (lineHeight + verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
 #endif
 #if CONFIG_ESPGUI_MENUDISPLAY_ROWS >= 9
-        Label{horizontalSpacing + iconWidth, topMargin+(8*(lineHeight+verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
+        Label{horizontalSpacing + iconWidth,
+              topMargin + (8 * (lineHeight + verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
 #endif
 #if CONFIG_ESPGUI_MENUDISPLAY_ROWS >= 10
-        Label{horizontalSpacing + iconWidth, topMargin+(9*(lineHeight+verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
+        Label{horizontalSpacing + iconWidth,
+              topMargin + (9 * (lineHeight + verticalSpacing))}, // 240-(horizontalSpacing*2)-iconWidth, lineHeight
 #endif
     }};
 
     std::array<const Icon<24, 24> *, rowCount> m_icons{};
 
     int m_selectedIndex{};
-    int m_scrollOffset{};
-    int m_highlightedIndex{};
+    size_t m_scrollOffset{};
+    size_t m_highlightedIndex{};
 
     int m_rotateOffset{};
     bool m_pressed{};

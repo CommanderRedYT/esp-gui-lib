@@ -4,26 +4,26 @@
 #include <esp_log.h>
 
 // 3rdparty lib includes
-#include <strutils.h>
 #include <fontrenderer.h>
+#include <strutils.h>
 
 // local includes
-#include "tftinterface.h"
-#include "tftcolors.h"
 #include "display.h"
 #include "screenmanager.h"
+#include "tftcolors.h"
+#include "tftinterface.h"
 
 namespace espgui {
 namespace {
-    constexpr const char * const TAG = "KeyboardHelper";
-    // all ascii chars from '!' to '~'
-    constexpr const char * const KEYBOARD_SCREEN_1 =  "\"!$%&/()=?QWERTZUIOPASDFGHJKL YXCVBNM";
-    constexpr const char * const KEYBOARD_SCREEN_2 =   "1234567890qwertzuiopasdfghjkl yxcvbnm";
-    constexpr const char * const KEYBOARD_SCREEN_3 = "#'*+-,.;:_<|>\\@[]^_`{}~\"!$%&/ ()=?+-*";
-    constexpr const char * const SHIFT = "Shift";
-    constexpr const char * const SPACE = "Space";
-    constexpr const char * const BACKSPACE = "Back";
-    constexpr const char * const ENTER = "Enter";
+constexpr const char *const TAG = "KeyboardHelper";
+// all ascii chars from '!' to '~'
+constexpr const char *const KEYBOARD_SCREEN_1 = "\"!$%&/()=?QWERTZUIOPASDFGHJKL YXCVBNM";
+constexpr const char *const KEYBOARD_SCREEN_2 = "1234567890qwertzuiopasdfghjkl yxcvbnm";
+constexpr const char *const KEYBOARD_SCREEN_3 = "#'*+-,.;:_<|>\\@[]^_`{}~\"!$%&/ ()=?+-*";
+constexpr const char *const SHIFT = "Shift";
+constexpr const char *const SPACE = "Space";
+constexpr const char *const BACKSPACE = "Back";
+constexpr const char *const ENTER = "Enter";
 } // namespace
 
 template<typename TDisplay = espgui::Display>
@@ -47,11 +47,11 @@ public:
 private:
     void updateCharLength();
 
-    void drawKeyboard(TftInterface &tft, bool dont_draw_string = false);
+    void drawKeyboard(TftInterface &tft, bool dont_draw_string = false) const;
 
     void nextScreen();
 
-    int32_t m_char_length{0};
+    size_t m_char_length{0};
     std::string m_keyboard{KEYBOARD_SCREEN_1};
     std::string m_keyset{};
 
@@ -61,7 +61,8 @@ private:
     int32_t m_char_index{10};
     int32_t m_last_char_index{-1};
 
-    enum class Screen : uint8_t {
+    enum class Screen : uint8_t
+    {
         SCREEN_1,
         SCREEN_2,
         SCREEN_3,
@@ -91,8 +92,7 @@ void Keyboard<TDisplay>::moveSelectorUp()
     m_last_char_index = m_char_index;
 
     m_char_index -= 10;
-    if (m_char_index < 0)
-        m_char_index = (m_char_length + 4) - m_char_index;
+    if (m_char_index < 0) m_char_index = (m_char_length + 4) - m_char_index;
 }
 
 template<typename TDisplay>
@@ -101,8 +101,7 @@ void Keyboard<TDisplay>::moveSelectorDown()
     m_last_char_index = m_char_index;
 
     m_char_index += 10;
-    if (m_char_index >= (m_char_length + 4))
-        m_char_index = m_char_index - (m_char_length + 4);
+    if (m_char_index >= (m_char_length + 4)) m_char_index = m_char_index - (m_char_length + 4);
 }
 
 template<typename TDisplay>
@@ -110,8 +109,7 @@ void Keyboard<TDisplay>::nextScreen()
 {
 
     m_current_screen = static_cast<Screen>(static_cast<uint8_t>(m_current_screen) + uint8_t{1});
-    if (m_current_screen >= Screen::SCREEN_MAX)
-        m_current_screen = Screen::SCREEN_1;
+    if (m_current_screen >= Screen::SCREEN_MAX) m_current_screen = Screen::SCREEN_1;
 
     updateCharLength();
 
@@ -120,11 +118,11 @@ void Keyboard<TDisplay>::nextScreen()
 }
 
 template<typename TDisplay>
-void Keyboard<TDisplay>::drawKeyboard(TftInterface &tft, bool dont_draw_string)
+void Keyboard<TDisplay>::drawKeyboard(TftInterface &tft, bool dont_draw_string) const
 {
     FontRenderer fontRenderer{tft};
 
-    constexpr const int FONT = 4;
+    constexpr int FONT = 4;
 
     size_t char_index{0};
 
@@ -133,8 +131,7 @@ void Keyboard<TDisplay>::drawKeyboard(TftInterface &tft, bool dont_draw_string)
     for (size_t i = 0; i < m_keyboard.size(); i += 10)
     {
         std::string line = m_keyboard.substr(i, 10);
-        if (line.ends_with(" "))
-            line.pop_back();
+        if (line.ends_with(' ')) line.pop_back();
 
         keyboard_lines.emplace_back(line);
     }
@@ -153,14 +150,17 @@ void Keyboard<TDisplay>::drawKeyboard(TftInterface &tft, bool dont_draw_string)
             const auto width = fontRenderer.textWidth(_char, FONT) + 2;
             const auto height = fontRenderer.fontHeight(FONT) + 4;
 
-            tft.drawRoundRect(x_pos-width/2-1, y_pos-height/2, width+2, height-4, 3, espgui::TFT_BLACK);
+            tft.drawRoundRect(x_pos - width / 2 - 1, y_pos - height / 2, width + 2, height - 4, 3, espgui::TFT_BLACK);
 
             if (char_index == m_char_index)
-                tft.drawRoundRect(x_pos-width/2-1, y_pos-height/2, width+2, height-4, 3, espgui::TFT_DARKGREY);
+                tft.drawRoundRect(x_pos - width / 2 - 1, y_pos - height / 2, width + 2, height - 4, 3,
+                                  espgui::TFT_DARKGREY);
 
             if (!dont_draw_string || char_index == m_char_index || char_index == m_last_char_index)
             {
-                fontRenderer.drawString(_char, x_pos, y_pos, (char_index == m_char_index ? espgui::TFT_WHITE : espgui::TFT_GREY), espgui::TFT_BLACK, FONT, 4); // 4 = center
+                fontRenderer.drawString(_char, x_pos, y_pos,
+                                        (char_index == m_char_index ? espgui::TFT_WHITE : espgui::TFT_GREY),
+                                        espgui::TFT_BLACK, FONT, 4); // 4 = center
             }
             char_index++;
         }
@@ -172,49 +172,74 @@ void Keyboard<TDisplay>::drawKeyboard(TftInterface &tft, bool dont_draw_string)
     if (isLandscape(tft))
     {
         // align left (SHIFT, SPACE)
-        tft.drawRoundRect(15 - 2, y - 1, fontRenderer.textWidth(SHIFT, FONT) + 4, fontRenderer.fontHeight(FONT) + 2, 3, espgui::TFT_DARKGREY);
-        tft.drawRoundRect(30 + fontRenderer.textWidth(SHIFT, FONT) - 2, y - 1, fontRenderer.textWidth(SPACE, FONT) + 4, fontRenderer.fontHeight(FONT) + 2, 3,
+        tft.drawRoundRect(15 - 2, y - 1, fontRenderer.textWidth(SHIFT, FONT) + 4, fontRenderer.fontHeight(FONT) + 2, 3,
                           espgui::TFT_DARKGREY);
+        tft.drawRoundRect(30 + fontRenderer.textWidth(SHIFT, FONT) - 2, y - 1, fontRenderer.textWidth(SPACE, FONT) + 4,
+                          fontRenderer.fontHeight(FONT) + 2, 3, espgui::TFT_DARKGREY);
 
         // align right (BACKSPACE, ENTER); align from tft.width()
-        tft.drawRoundRect(tft.width() - 30 - fontRenderer.textWidth(ENTER, FONT) - fontRenderer.textWidth(BACKSPACE, FONT) - 2, y - 1,
-                          fontRenderer.textWidth(BACKSPACE, FONT) + 4, fontRenderer.fontHeight(FONT) + 2, 3, espgui::TFT_DARKGREY);
-        tft.drawRoundRect(tft.width() - 15 - fontRenderer.textWidth(ENTER, FONT) - 2, y - 1, fontRenderer.textWidth(ENTER, FONT) + 4,
-                          fontRenderer.fontHeight(FONT) + 2, 3, espgui::TFT_DARKGREY);
+        tft.drawRoundRect(
+            tft.width() - 30 - fontRenderer.textWidth(ENTER, FONT) - fontRenderer.textWidth(BACKSPACE, FONT) - 2, y - 1,
+            fontRenderer.textWidth(BACKSPACE, FONT) + 4, fontRenderer.fontHeight(FONT) + 2, 3, espgui::TFT_DARKGREY);
+        tft.drawRoundRect(tft.width() - 15 - fontRenderer.textWidth(ENTER, FONT) - 2, y - 1,
+                          fontRenderer.textWidth(ENTER, FONT) + 4, fontRenderer.fontHeight(FONT) + 2, 3,
+                          espgui::TFT_DARKGREY);
 
         // if (!dont_draw_string)
         {
             // align left (SHIFT, SPACE)
-            fontRenderer.drawString(SHIFT, 15, y, (m_char_index == m_char_length ? espgui::TFT_BLACK : espgui::TFT_WHITE), (m_char_index == m_char_length ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
-            fontRenderer.drawString(SPACE, 30 + fontRenderer.textWidth(SHIFT, FONT), y, (m_char_index == m_char_length + 1 ? espgui::TFT_BLACK : espgui::TFT_WHITE), (m_char_index == m_char_length +1 ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
+            fontRenderer.drawString(SHIFT, 15, y,
+                                    (m_char_index == m_char_length ? espgui::TFT_BLACK : espgui::TFT_WHITE),
+                                    (m_char_index == m_char_length ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
+            fontRenderer.drawString(SPACE, 30 + fontRenderer.textWidth(SHIFT, FONT), y,
+                                    (m_char_index == m_char_length + 1 ? espgui::TFT_BLACK : espgui::TFT_WHITE),
+                                    (m_char_index == m_char_length + 1 ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
 
             // align right (BACKSPACE, ENTER); align from tft.width()
-            fontRenderer.drawString(BACKSPACE, tft.width() - 30 - fontRenderer.textWidth(ENTER, FONT) - fontRenderer.textWidth(BACKSPACE, FONT), y, (m_char_index == m_char_length + 2 ? espgui::TFT_BLACK : espgui::TFT_WHITE), (m_char_index == m_char_length + 2 ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
-            fontRenderer.drawString(ENTER, tft.width() - 15 - fontRenderer.textWidth(ENTER, FONT), y, (m_char_index == m_char_length + 3 ? espgui::TFT_BLACK : espgui::TFT_WHITE), (m_char_index == m_char_length + 3 ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
+            fontRenderer.drawString(BACKSPACE,
+                                    tft.width() - 30 - fontRenderer.textWidth(ENTER, FONT) -
+                                        fontRenderer.textWidth(BACKSPACE, FONT),
+                                    y, (m_char_index == m_char_length + 2 ? espgui::TFT_BLACK : espgui::TFT_WHITE),
+                                    (m_char_index == m_char_length + 2 ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
+            fontRenderer.drawString(ENTER, tft.width() - 15 - fontRenderer.textWidth(ENTER, FONT), y,
+                                    (m_char_index == m_char_length + 3 ? espgui::TFT_BLACK : espgui::TFT_WHITE),
+                                    (m_char_index == m_char_length + 3 ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
         }
     }
     else
     {
         const int32_t y_2 = y + fontRenderer.fontHeight(FONT) + 4;
         // align left (SHIFT, SPACE)
-        tft.drawRoundRect(15 - 2,   y - 1, fontRenderer.textWidth(SHIFT, FONT) + 4, fontRenderer.fontHeight(FONT) + 2, 3, espgui::TFT_DARKGREY);
-        tft.drawRoundRect(15 - 2, y_2 - 1, fontRenderer.textWidth(SPACE, FONT) + 4, fontRenderer.fontHeight(FONT) + 2, 3, espgui::TFT_DARKGREY);
+        tft.drawRoundRect(15 - 2, y - 1, fontRenderer.textWidth(SHIFT, FONT) + 4, fontRenderer.fontHeight(FONT) + 2, 3,
+                          espgui::TFT_DARKGREY);
+        tft.drawRoundRect(15 - 2, y_2 - 1, fontRenderer.textWidth(SPACE, FONT) + 4, fontRenderer.fontHeight(FONT) + 2,
+                          3, espgui::TFT_DARKGREY);
 
         // align right (BACKSPACE, ENTER); align from tft.width()
-        tft.drawRoundRect(tft.width() - 15 - fontRenderer.textWidth(ENTER, FONT) - 2, y - 1, fontRenderer.textWidth(ENTER, FONT) + 4,
-                          fontRenderer.fontHeight(FONT) + 2, 3, espgui::TFT_DARKGREY);
-        tft.drawRoundRect(tft.width() - 15 - fontRenderer.textWidth(BACKSPACE, FONT) - 2, y_2 - 1, fontRenderer.textWidth(BACKSPACE, FONT) + 4,
-                          fontRenderer.fontHeight(FONT) + 2, 3, espgui::TFT_DARKGREY);
+        tft.drawRoundRect(tft.width() - 15 - fontRenderer.textWidth(ENTER, FONT) - 2, y - 1,
+                          fontRenderer.textWidth(ENTER, FONT) + 4, fontRenderer.fontHeight(FONT) + 2, 3,
+                          espgui::TFT_DARKGREY);
+        tft.drawRoundRect(tft.width() - 15 - fontRenderer.textWidth(BACKSPACE, FONT) - 2, y_2 - 1,
+                          fontRenderer.textWidth(BACKSPACE, FONT) + 4, fontRenderer.fontHeight(FONT) + 2, 3,
+                          espgui::TFT_DARKGREY);
 
         // if (!dont_draw_string)
         {
             // align left (SHIFT, SPACE)
-            fontRenderer.drawString(SHIFT, 15, y, (m_char_index == m_char_length ? espgui::TFT_BLACK : espgui::TFT_WHITE), (m_char_index == m_char_length ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
-            fontRenderer.drawString(SPACE, 15, y_2, (m_char_index == m_char_length + 1 ? espgui::TFT_BLACK : espgui::TFT_WHITE), (m_char_index == m_char_length + 1 ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
+            fontRenderer.drawString(SHIFT, 15, y,
+                                    (m_char_index == m_char_length ? espgui::TFT_BLACK : espgui::TFT_WHITE),
+                                    (m_char_index == m_char_length ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
+            fontRenderer.drawString(SPACE, 15, y_2,
+                                    (m_char_index == m_char_length + 1 ? espgui::TFT_BLACK : espgui::TFT_WHITE),
+                                    (m_char_index == m_char_length + 1 ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
 
             // align right (BACKSPACE, ENTER); align from tft.width()
-            fontRenderer.drawString(BACKSPACE, tft.width() - 15 - fontRenderer.textWidth(BACKSPACE, FONT), y_2, (m_char_index == m_char_length + 2 ? espgui::TFT_BLACK : espgui::TFT_WHITE), (m_char_index == m_char_length + 2 ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
-            fontRenderer.drawString(ENTER, tft.width() - 15 - fontRenderer.textWidth(ENTER, FONT), y, (m_char_index == m_char_length + 3 ? espgui::TFT_BLACK : espgui::TFT_WHITE), (m_char_index == m_char_length + 3 ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
+            fontRenderer.drawString(BACKSPACE, tft.width() - 15 - fontRenderer.textWidth(BACKSPACE, FONT), y_2,
+                                    (m_char_index == m_char_length + 2 ? espgui::TFT_BLACK : espgui::TFT_WHITE),
+                                    (m_char_index == m_char_length + 2 ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
+            fontRenderer.drawString(ENTER, tft.width() - 15 - fontRenderer.textWidth(ENTER, FONT), y,
+                                    (m_char_index == m_char_length + 3 ? espgui::TFT_BLACK : espgui::TFT_WHITE),
+                                    (m_char_index == m_char_length + 3 ? espgui::TFT_WHITE : espgui::TFT_BLACK), FONT);
         }
     }
 }
@@ -226,18 +251,18 @@ void Keyboard<TDisplay>::updateCharLength()
 
     switch (m_current_screen)
     {
-    case Screen::SCREEN_1:
-        tmpstr = KEYBOARD_SCREEN_1;
-        break;
-    case Screen::SCREEN_2:
-        tmpstr = KEYBOARD_SCREEN_2;
-        break;
-    case Screen::SCREEN_3:
-        tmpstr = KEYBOARD_SCREEN_3;
-        break;
-    default:
-        ESP_LOGE(TAG, "Unknown screen");
-        return;
+        case Screen::SCREEN_1:
+            tmpstr = KEYBOARD_SCREEN_1;
+            break;
+        case Screen::SCREEN_2:
+            tmpstr = KEYBOARD_SCREEN_2;
+            break;
+        case Screen::SCREEN_3:
+            tmpstr = KEYBOARD_SCREEN_3;
+            break;
+        default:
+            ESP_LOGE(TAG, "Unknown screen");
+            return;
     }
 
     m_keyboard = tmpstr;
@@ -274,8 +299,10 @@ void Keyboard<TDisplay>::start(TftInterface &tft)
     const auto isLandscape = espgui::isLandscape(tft);
     m_keyboard_start_y = isLandscape ? 98 : 120;
 
-    tft.fillRect(1, m_keyboard_start_y - 10, tft.width()-1, tft.height() - m_keyboard_start_y - (isLandscape ? 0 : 30), TFT_BLACK);
-    tft.drawSunkenRect(1, m_keyboard_start_y - 10, tft.width()-1, tft.height() - m_keyboard_start_y - (isLandscape ? 0 : 30), TFT_WHITE, TFT_GREY, TFT_BLACK);
+    tft.fillRect(1, m_keyboard_start_y - 10, tft.width() - 1,
+                 tft.height() - m_keyboard_start_y - (isLandscape ? 0 : 30), TFT_BLACK);
+    tft.drawSunkenRect(1, m_keyboard_start_y - 10, tft.width() - 1,
+                       tft.height() - m_keyboard_start_y - (isLandscape ? 0 : 30), TFT_WHITE, TFT_GREY, TFT_BLACK);
 
     updateCharLength();
     drawKeyboard(tft);
@@ -292,8 +319,10 @@ void Keyboard<TDisplay>::redraw(TftInterface &tft)
     if (m_needsStart)
     {
         m_needsStart = false;
-        tft.fillRect(1, m_keyboard_start_y - 10, tft.width()-1, tft.height() - m_keyboard_start_y - (isLandscape ? 0 : 30), TFT_BLACK);
-        tft.drawSunkenRect(1, m_keyboard_start_y - 10, tft.width()-1, tft.height() - m_keyboard_start_y - (isLandscape ? 0 : 30), TFT_WHITE, TFT_GREY, TFT_BLACK);
+        tft.fillRect(1, m_keyboard_start_y - 10, tft.width() - 1,
+                     tft.height() - m_keyboard_start_y - (isLandscape ? 0 : 30), TFT_BLACK);
+        tft.drawSunkenRect(1, m_keyboard_start_y - 10, tft.width() - 1,
+                           tft.height() - m_keyboard_start_y - (isLandscape ? 0 : 30), TFT_WHITE, TFT_GREY, TFT_BLACK);
         updateCharLength();
     }
 
@@ -305,84 +334,80 @@ void Keyboard<TDisplay>::redraw(TftInterface &tft)
 }
 
 template<typename TDisplay>
-void Keyboard<TDisplay>::buttonPressed(Button button)
+void Keyboard<TDisplay>::buttonPressed(const Button button)
 {
     using namespace std::chrono_literals;
 
     switch (button)
     {
-    case Right:
-    {
-        m_confirm_pressed_time = espchrono::millis_clock::now();
-        break;
-    }
-    case Left:
-        m_back_pressed_time = espchrono::millis_clock::now();
-        break;
-    case Up:
-        moveSelectorLeft();
-        m_needsRedraw = true;
-        m_upHeld = ButtonHeldInfo { .nextTimestamp = espchrono::millis_clock::now() + 300ms };
-        break;
-    case Down:
-        moveSelectorRight();
-        m_needsRedraw = true;
-        m_downHeld = ButtonHeldInfo { .nextTimestamp = espchrono::millis_clock::now() + 300ms };
-        break;
-    default:;
+        case Right: {
+            m_confirm_pressed_time = espchrono::millis_clock::now();
+            break;
+        }
+        case Left:
+            m_back_pressed_time = espchrono::millis_clock::now();
+            break;
+        case Up:
+            moveSelectorLeft();
+            m_needsRedraw = true;
+            m_upHeld = ButtonHeldInfo{.nextTimestamp = espchrono::millis_clock::now() + 300ms};
+            break;
+        case Down:
+            moveSelectorRight();
+            m_needsRedraw = true;
+            m_downHeld = ButtonHeldInfo{.nextTimestamp = espchrono::millis_clock::now() + 300ms};
+            break;
+        default:;
     }
 }
 
 template<typename TDisplay>
-void Keyboard<TDisplay>::buttonReleased(espgui::Button button)
+void Keyboard<TDisplay>::buttonReleased(const espgui::Button button)
 {
     using namespace std::chrono_literals;
 
     switch (button)
     {
-    case Left:
-        if (!m_back_pressed_time)
-            return;
+        case Left:
+            if (!m_back_pressed_time) return;
 
-        if (espchrono::ago(*m_back_pressed_time) < 350ms)
-            m_display.removeLastCharFromShownValue();
+            if (espchrono::ago(*m_back_pressed_time) < 350ms) m_display.removeLastCharFromShownValue();
 
-        m_back_pressed_time = std::nullopt;
-        break;
-    case Right:
-        if (!m_confirm_pressed_time)
-            return;
+            m_back_pressed_time = std::nullopt;
+            break;
+        case Right:
+            if (!m_confirm_pressed_time) return;
 
-        if (espchrono::ago(*m_confirm_pressed_time) < 350ms)
-        {
-            if (m_char_index < m_char_length)
-                m_display.setShownValue(m_display.shownValue() + m_keyset[m_char_index]);
-            else if (m_char_index == m_char_length) // shift
+            if (espchrono::ago(*m_confirm_pressed_time) < 350ms)
             {
-                nextScreen();
+                if (m_char_index < m_char_length)
+                    m_display.setShownValue(m_display.shownValue() + m_keyset[m_char_index]);
+                else if (m_char_index == m_char_length) // shift
+                {
+                    nextScreen();
+                }
+                else if (m_char_index == m_char_length + 1) // space
+                {
+                    m_display.setShownValue(m_display.shownValue() + " ");
+                }
+                else if (m_char_index == m_char_length + 2) // backspace
+                {
+                    m_display.removeLastCharFromShownValue();
+                }
+                else if (m_char_index == m_char_length + 3) // enter
+                {
+                    m_display.confirmValue();
+                }
             }
-            else if (m_char_index == m_char_length + 1) // space
-            {
-                m_display.setShownValue(m_display.shownValue() + " ");
-            }
-            else if (m_char_index == m_char_length + 2) // backspace
-            {
-                m_display.removeLastCharFromShownValue();
-            }
-            else if (m_char_index == m_char_length + 3) // enter
-            {
-                m_display.confirmValue();
-            }
-        }
-        m_confirm_pressed_time = std::nullopt;
-        break;
-    case Up:
-        m_upHeld = std::nullopt;
-        break;
-    case Down:
-        m_downHeld = std::nullopt;
-        break;
-    default:;
+            m_confirm_pressed_time = std::nullopt;
+            break;
+        case Up:
+            m_upHeld = std::nullopt;
+            break;
+        case Down:
+            m_downHeld = std::nullopt;
+            break;
+        default:;
     }
 }
 
@@ -413,14 +438,14 @@ void Keyboard<TDisplay>::update()
     if (m_upHeld && now >= m_upHeld->nextTimestamp)
     {
         m_upHeld->nextTimestamp += m_upHeld->counter > 3 ? 100ms : 200ms;
-        m_upHeld->counter++;
+        ++m_upHeld->counter;
         moveSelectorLeft();
         m_needsRedraw = true;
     }
     if (m_downHeld && now >= m_downHeld->nextTimestamp)
     {
         m_downHeld->nextTimestamp += m_downHeld->counter > 3 ? 100ms : 200ms;
-        m_downHeld->counter++;
+        ++m_downHeld->counter;
         moveSelectorRight();
         m_needsRedraw = true;
     }

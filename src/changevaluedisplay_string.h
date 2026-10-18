@@ -1,8 +1,8 @@
 #pragma once
 
 // system includes
-#include <string>
 #include <optional>
+#include <string>
 
 // local includes
 #include "backinterface.h"
@@ -16,18 +16,17 @@
 namespace espgui {
 
 template<>
-class ChangeValueDisplay<std::string> :
-    public DisplayWithTitle,
-    public virtual AccessorInterface<std::string>,
-    public virtual ConfirmInterface,
-    public virtual BackInterface,
-    public virtual ErrorHandlerInterface
+class ChangeValueDisplay<std::string> : public DisplayWithTitle,
+                                        public virtual AccessorInterface<std::string>,
+                                        public virtual ConfirmInterface,
+                                        public virtual BackInterface,
+                                        public virtual ErrorHandlerInterface
 {
     using Base = DisplayWithTitle;
 
 public:
-    ChangeValueDisplay<std::string> *asChangeValueDisplayString() override { return this; }
-    const ChangeValueDisplay<std::string> *asChangeValueDisplayString() const override { return this; }
+    ChangeValueDisplay *asChangeValueDisplayString() override { return this; }
+    [[nodiscard]] const ChangeValueDisplay *asChangeValueDisplayString() const override { return this; }
 
     void start() override;
     void initScreen(TftInterface &tft) override;
@@ -39,7 +38,7 @@ public:
 
     void confirmValue();
 
-    const std::string &shownValue() const { return m_value; }
+    [[nodiscard]] const std::string &shownValue() const { return m_value; }
     void setShownValue(std::string &&value);
     void appendToShownValue(char c) { m_value.push_back(c); }
     void appendToShownValue(const std::string &s) { m_value.append(s); }
@@ -51,7 +50,7 @@ private:
     std::string m_value;
 
     Label m_valueLabel{12, 55}; // 188, 53
-    Keyboard<ChangeValueDisplay<std::string>> m_keyboard{*this};
+    Keyboard<ChangeValueDisplay> m_keyboard{*this};
 
     std::optional<std::string> m_needsClear;
 };

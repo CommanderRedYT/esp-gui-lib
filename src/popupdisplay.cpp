@@ -5,8 +5,7 @@
 
 namespace espgui {
 
-PopupDisplay::PopupDisplay(std::unique_ptr<Display> &&lastDisplay) :
-    m_lastDisplay{std::move(lastDisplay)}
+PopupDisplay::PopupDisplay(std::unique_ptr<Display> &&lastDisplay) : m_lastDisplay{std::move(lastDisplay)}
 {
 }
 
@@ -21,9 +20,7 @@ void PopupDisplay::initScreen(TftInterface &tft)
 
 void PopupDisplay::closeOverlay()
 {
-    espgui::changeScreenCallback = [this](espgui::TftInterface &tft){
-        closeOverlay(tft);
-    };
+    espgui::changeScreenCallback = [this](espgui::TftInterface &tft) { closeOverlay(tft); };
 }
 
 void PopupDisplay::closeOverlay(TftInterface &tft)

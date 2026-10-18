@@ -1,24 +1,21 @@
 #pragma once
 
+// local includes
 #include "actioninterface.h"
 
-using namespace espgui;
+namespace espgui {
 
-namespace {
-template<typename ...T>
+template<typename... T>
 class MultiAction;
 
 template<typename T>
 class MultiAction<T> : public virtual ActionInterface
 {
 public:
-    void triggered() override
-    {
-        T{}.triggered();
-    }
+    void triggered() override { T{}.triggered(); }
 };
 
-template<typename T, typename ...Tmore>
+template<typename T, typename... Tmore>
 class MultiAction<T, Tmore...> : public virtual MultiAction<Tmore...>
 {
 public:
@@ -28,4 +25,5 @@ public:
         MultiAction<Tmore...>::triggered();
     }
 };
-}
+
+} // namespace espgui

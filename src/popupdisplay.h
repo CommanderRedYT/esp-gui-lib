@@ -13,7 +13,7 @@ class PopupDisplay : public Display
     using Base = Display;
 
 public:
-    PopupDisplay(std::unique_ptr<Display> &&lastDisplay);
+    explicit PopupDisplay(std::unique_ptr<Display> &&lastDisplay);
 
     void initScreen(TftInterface &tft) override;
 

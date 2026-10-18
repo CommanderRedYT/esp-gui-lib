@@ -1,23 +1,26 @@
 #pragma once
 
 namespace espgui {
-class VisibleInterface {
+class VisibleInterface
+{
 public:
-    virtual bool visible() const { return true; }
+    virtual ~VisibleInterface() = default;
+    [[nodiscard]] virtual bool visible() const { return true; }
 };
 
 template<bool TVisible>
 class StaticVisibility : public virtual VisibleInterface
 {
 public:
-    bool visible() const override { return TVisible; }
+    [[nodiscard]] bool visible() const override { return TVisible; }
 };
 
 class ChangeableVisibility : public virtual VisibleInterface
 {
 public:
-    void setVisible(bool visible) { m_visible = visible; }
-    bool visible() const override { return m_visible; }
+    void setVisible(const bool visible) { m_visible = visible; }
+    [[nodiscard]] bool visible() const override { return m_visible; }
+
 private:
     bool m_visible = true;
 };

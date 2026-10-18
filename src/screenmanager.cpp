@@ -9,13 +9,13 @@
 namespace espgui {
 
 namespace {
-constexpr const char * const TAG = "SCREENMANAGER";
+constexpr const char *const TAG = "SCREENMANAGER";
 } // namespace
 
 std::unique_ptr<Display> currentDisplay;
 std::stack<std::unique_ptr<Display>> displayStack;
 
-std::function<void(TftInterface&)> changeScreenCallback;
+std::function<void(TftInterface &)> changeScreenCallback;
 
 void deconstructScreen()
 {
@@ -56,7 +56,7 @@ void popScreenImpl(TftInterface &tft)
 
 void popScreen()
 {
-    changeScreenCallback = [](TftInterface &tft){ popScreenImpl(tft); };
+    changeScreenCallback = [](TftInterface &tft) { popScreenImpl(tft); };
 }
 
 } // namespace espgui

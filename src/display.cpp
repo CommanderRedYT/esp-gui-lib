@@ -1,11 +1,8 @@
 #include "display.h"
 
-// 3rdparty lib includes
-#include "TFT_eSPI.h"
-
 // local includes
-#include "tftinterface.h"
 #include "tftcolors.h"
+#include "tftinterface.h"
 
 namespace espgui {
 
