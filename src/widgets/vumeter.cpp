@@ -42,10 +42,10 @@ void VuMeter::start(TftInterface &tft)
         // Coordinates of next tick for zone fill
         float sx2 = cos((i + 5 - 90) * 0.0174532925);
         float sy2 = sin((i + 5 - 90) * 0.0174532925);
-        int x2 = sx2 * (100 + tl) + 120;
-        int y2 = sy2 * (100 + tl) + 140;
-        int x3 = sx2 * 100 + 120;
-        int y3 = sy2 * 100 + 140;
+        const int x2 = sx2 * (100 + tl) + 120;
+        const int y2 = sy2 * (100 + tl) + 140;
+        const int x3 = sx2 * 100 + 120;
+        const int y3 = sy2 * 100 + 140;
 
         // Yellow zone limits
         // if (i >= -50 && i < 0) {
